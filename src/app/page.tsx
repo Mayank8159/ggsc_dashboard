@@ -1,19 +1,28 @@
-import { getAnalytics, rawData } from "@/lib/data";
+"use client";
+
+import { useState } from "react";
+import { getAnalytics, rawData, getInterviewAssignments } from "@/lib/data";
 import StatCard from "@/components/StatCard";
 import BarChartCard from "@/components/BarChart";
 import PieChartCard from "@/components/PieChart";
 import ApplicantsTable from "@/components/ApplicantsTable";
+import InterviewPage from "@/components/InterviewPage";
+
+const analytics = getAnalytics(rawData);
+const assignments = getInterviewAssignments(rawData);
+
+const committedCount = rawData.filter(
+  (d) => d.willingToParticipate.toLowerCase().includes("fully committed")
+).length;
+const whatsappCount = rawData.filter(
+  (d) => d.joinedWhatsApp.toLowerCase().includes("yes")
+).length;
+const uniqueUniversities = new Set(rawData.map((d) => d.university)).size;
+
+type Tab = "dashboard" | "interviews";
 
 export default function Home() {
-  const analytics = getAnalytics(rawData);
-
-  const committedCount = rawData.filter(
-    (d) => d.willingToParticipate.toLowerCase().includes("fully committed")
-  ).length;
-  const whatsappCount = rawData.filter(
-    (d) => d.joinedWhatsApp.toLowerCase().includes("yes")
-  ).length;
-  const uniqueUniversities = new Set(rawData.map((d) => d.university)).size;
+  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -35,95 +44,90 @@ export default function Home() {
             {analytics.total} Total Responses
           </div>
         </div>
+
+        {/* Tabs */}
+        <div className="max-w-[1600px] mx-auto px-6">
+          <div className="flex gap-1 -mb-px">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === "dashboard"
+                  ? "border-[var(--accent)] text-[var(--accent)]"
+                  : "border-transparent text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              Analytics Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("interviews")}
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === "interviews"
+                  ? "border-[var(--accent)] text-[var(--accent)]"
+                  : "border-transparent text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              Interview Assignments
+            </button>
+          </div>
+        </div>
       </header>
 
       <main className="max-w-[1600px] mx-auto px-6 py-8 space-y-8">
-        {/* Stats Row */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            label="Total Applicants"
-            value={analytics.total}
-            icon="👥"
-            color="#6366f1"
-          />
-          <StatCard
-            label="Universities"
-            value={uniqueUniversities}
-            icon="🏛"
-            color="#8b5cf6"
-          />
-          <StatCard
-            label="Fully Committed"
-            value={committedCount}
-            icon="✅"
-            color="#22c55e"
-          />
-          <StatCard
-            label="Joined WhatsApp"
-            value={whatsappCount}
-            icon="💬"
-            color="#14b8a6"
-          />
-        </section>
+        {activeTab === "dashboard" && (
+          <>
+            {/* Stats Row */}
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatCard label="Total Applicants" value={analytics.total} icon="👥" color="#6366f1" />
+              <StatCard label="Universities" value={uniqueUniversities} icon="🏛" color="#8b5cf6" />
+              <StatCard label="Fully Committed" value={committedCount} icon="✅" color="#22c55e" />
+              <StatCard label="Joined WhatsApp" value={whatsappCount} icon="💬" color="#14b8a6" />
+            </section>
 
-        {/* Charts Row 1: Domains & Year Distribution */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BarChartCard
-            data={analytics.domainCounts}
-            title="Domain Preferences"
-            layout="vertical"
-          />
-          <PieChartCard
-            data={analytics.yearCounts}
-            title="Year of Study Distribution"
-          />
-        </section>
+            {/* Charts Row 1 */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <BarChartCard data={analytics.domainCounts} title="Domain Preferences" layout="vertical" />
+              <PieChartCard data={analytics.yearCounts} title="Year of Study Distribution" />
+            </section>
 
-        {/* Charts Row 2: Universities & Departments */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BarChartCard
-            data={analytics.universityCounts}
-            title="Top Universities"
-            layout="vertical"
-            colors={["#3b82f6", "#06b6d4", "#14b8a6", "#22c55e", "#84cc16", "#eab308", "#f97316", "#f43f5e"]}
-          />
-          <BarChartCard
-            data={analytics.departmentCounts}
-            title="Department Distribution"
-            layout="vertical"
-            colors={["#a855f7", "#d946ef", "#ec4899", "#f43f5e", "#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16", "#22c55e"]}
-          />
-        </section>
+            {/* Charts Row 2 */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <BarChartCard
+                data={analytics.universityCounts}
+                title="Top Universities"
+                layout="vertical"
+                colors={["#3b82f6", "#06b6d4", "#14b8a6", "#22c55e", "#84cc16", "#eab308", "#f97316", "#f43f5e"]}
+              />
+              <BarChartCard
+                data={analytics.departmentCounts}
+                title="Department Distribution"
+                layout="vertical"
+                colors={["#a855f7", "#d946ef", "#ec4899", "#f43f5e", "#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16", "#22c55e"]}
+              />
+            </section>
 
-        {/* Charts Row 3: Participation, WhatsApp, Source, Experience */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <PieChartCard
-            data={analytics.participationCounts}
-            title="Commitment Level"
-            colors={["#22c55e", "#f59e0b", "#ef4444"]}
-          />
-          <PieChartCard
-            data={analytics.whatsappCounts}
-            title="WhatsApp Group Status"
-            colors={["#22c55e", "#ef4444", "#6366f1"]}
-          />
-          <PieChartCard
-            data={analytics.experienceCounts}
-            title="Prior Experience"
-            colors={["#6366f1", "#a1a1aa"]}
-          />
-          <BarChartCard
-            data={analytics.heardCounts}
-            title="How They Heard About GGSC"
-            layout="vertical"
-            colors={["#f59e0b", "#f97316", "#ef4444", "#ec4899", "#d946ef", "#a855f7", "#6366f1"]}
-          />
-        </section>
+            {/* Charts Row 3 */}
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <PieChartCard data={analytics.participationCounts} title="Commitment Level" colors={["#22c55e", "#f59e0b", "#ef4444"]} />
+              <PieChartCard data={analytics.whatsappCounts} title="WhatsApp Group Status" colors={["#22c55e", "#ef4444", "#6366f1"]} />
+              <PieChartCard data={analytics.experienceCounts} title="Prior Experience" colors={["#6366f1", "#a1a1aa"]} />
+              <BarChartCard
+                data={analytics.heardCounts}
+                title="How They Heard About GGSC"
+                layout="vertical"
+                colors={["#f59e0b", "#f97316", "#ef4444", "#ec4899", "#d946ef", "#a855f7", "#6366f1"]}
+              />
+            </section>
 
-        {/* Table */}
-        <section>
-          <ApplicantsTable data={rawData} />
-        </section>
+            {/* Table */}
+            <section>
+              <ApplicantsTable data={rawData} />
+            </section>
+          </>
+        )}
+
+        {activeTab === "interviews" && (
+          <InterviewPage assignments={assignments} />
+        )}
 
         {/* Footer */}
         <footer className="text-center py-6 text-xs text-zinc-600 border-t border-[var(--card-border)]">

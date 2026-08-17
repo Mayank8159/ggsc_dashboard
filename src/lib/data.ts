@@ -119,3 +119,76 @@ export function getAnalytics(data: ResponseData) {
 }
 
 export const rawData: ResponseData = responses as ResponseData;
+
+export interface InterviewTeam {
+  teamName: string;
+  color: string;
+  interviewers: string[];
+  domainKeywords: string[];
+}
+
+export const interviewTeams: InterviewTeam[] = [
+  {
+    teamName: "Photography / Editing / Graphics",
+    color: "#d946ef",
+    interviewers: ["Suvrojeet", "Swastik", "Debojeet"],
+    domainKeywords: ["photography", "photo", "editing", "graphic", "graphics", "design", "visual", "video", "cinematography", "thumbnail", "poster", "branding"],
+  },
+  {
+    teamName: "Content",
+    color: "#f59e0b",
+    interviewers: ["Pallabi", "Subham", "Riti Mukta"],
+    domainKeywords: ["content", "writing", "blog", "article", "copywriting", "copy", "editorial", "storytelling", "creative writing"],
+  },
+  {
+    teamName: "Social Media / PR",
+    color: "#3b82f6",
+    interviewers: ["Oyeshee", "Pallabi", "Debojeet", "Sattiwk"],
+    domainKeywords: ["social media", "social", "pr", "branding", "marketing", "community", "outreach", "promotion", "public relations"],
+  },
+  {
+    teamName: "Std Ops / Logistics / Volunteer",
+    color: "#22c55e",
+    interviewers: ["Debayan", "Parnatosh", "Sagnik"],
+    domainKeywords: ["logistics", "volunteer", "operations", "management", "coordination", "planning", "event", "student operations", "std op"],
+  },
+  {
+    teamName: "Web Development",
+    color: "#6366f1",
+    interviewers: ["Mayank", "Tridibesh", "Diptodeep", "Swastik"],
+    domainKeywords: ["web", "development", "coding", "programming", "frontend", "backend", "fullstack", "full stack", "app", "mobile", "android", "ios", "software", "web development", "web dev"],
+  },
+];
+
+export interface InterviewAssignment {
+  team: InterviewTeam;
+  applicants: Response[];
+}
+
+export function getInterviewAssignments(data: ResponseData): InterviewAssignment[] {
+  const assignedIds = new Set<number>();
+
+  const assignments: InterviewAssignment[] = interviewTeams.map((team) => {
+    const matched = data.filter((applicant) => {
+      const domains = (applicant.domains || "").toLowerCase();
+      return team.domainKeywords.some((kw) => domains.includes(kw));
+    });
+    matched.forEach((a) => assignedIds.add(a.id));
+    return { team, applicants: matched };
+  });
+
+  const unassigned = data.filter((a) => !assignedIds.has(a.id));
+  if (unassigned.length > 0) {
+    assignments.push({
+      team: {
+        teamName: "Unassigned",
+        color: "#71717a",
+        interviewers: [],
+        domainKeywords: [],
+      },
+      applicants: unassigned,
+    });
+  }
+
+  return assignments;
+}
