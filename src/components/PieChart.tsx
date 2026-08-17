@@ -34,7 +34,7 @@ function renderCustomizedLabel(props: PieLabelRenderProps) {
   const outerRadius = Number(props.outerRadius) || 0;
   const percent = Number(props.percent) || 0;
 
-  if (percent < 0.05) return null;
+  if (percent < 0.06) return null;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -46,8 +46,9 @@ function renderCustomizedLabel(props: PieLabelRenderProps) {
       fill="white"
       textAnchor="middle"
       dominantBaseline="central"
-      fontSize={12}
-      fontWeight={600}
+      fontSize={11}
+      fontWeight={700}
+      style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
     >
       {`${(percent * 100).toFixed(0)}%`}
     </text>
@@ -60,43 +61,51 @@ export default function PieChartCard({
   colors = COLORS,
 }: PieChartProps) {
   return (
-    <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
-      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+    <div className="card-glow rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
+      <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
         {title}
       </h3>
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={data}
             cx="50%"
-            cy="50%"
+            cy="45%"
             labelLine={false}
             label={renderCustomizedLabel}
-            outerRadius={120}
+            outerRadius={105}
+            innerRadius={40}
             dataKey="value"
-            stroke="none"
+            stroke="#1a1b23"
+            strokeWidth={2}
           >
             {data.map((_, index) => (
               <Cell
                 key={index}
                 fill={colors[index % colors.length]}
-                fillOpacity={0.85}
+                fillOpacity={0.9}
               />
             ))}
           </Pie>
           <Tooltip
             contentStyle={{
               backgroundColor: "#1a1b23",
-              border: "1px solid #27272a",
-              borderRadius: "8px",
+              border: "1px solid #3f3f46",
+              borderRadius: "10px",
               color: "#e4e4e7",
-              fontSize: "13px",
+              fontSize: "12px",
+              padding: "8px 12px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
             }}
+            formatter={(value, name) => [`${value} applicants`, name]}
           />
           <Legend
-            wrapperStyle={{ fontSize: "12px", color: "#a1a1aa" }}
+            layout="horizontal"
+            verticalAlign="bottom"
+            align="center"
+            wrapperStyle={{ paddingTop: "12px", fontSize: "12px" }}
             formatter={(value: string) => (
-              <span style={{ color: "#a1a1aa" }}>{value}</span>
+              <span style={{ color: "#a1a1aa", fontSize: "11px" }}>{value}</span>
             )}
           />
         </PieChart>

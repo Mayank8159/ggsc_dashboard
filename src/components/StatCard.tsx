@@ -14,16 +14,19 @@ export default function StatCard({
   color = "#6366f1",
 }: StatCardProps) {
   return (
-    <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5 flex items-center gap-4 hover:border-[color:var(--accent)] transition-colors">
+    <div className="card-glow rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5 flex items-center gap-4">
       <div
-        className="w-12 h-12 rounded-lg flex items-center justify-center text-xl"
-        style={{ backgroundColor: `${color}20`, color }}
+        className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+        style={{
+          background: `linear-gradient(135deg, ${color}25, ${color}10)`,
+          boxShadow: `0 0 20px ${color}15`,
+        }}
       >
         {icon}
       </div>
-      <div>
-        <p className="text-2xl font-bold text-zinc-100">{value}</p>
-        <p className="text-sm text-zinc-500">{label}</p>
+      <div className="min-w-0">
+        <p className="text-2xl font-bold text-zinc-100 tabular-nums">{value}</p>
+        <p className="text-sm text-zinc-500 truncate">{label}</p>
       </div>
     </div>
   );

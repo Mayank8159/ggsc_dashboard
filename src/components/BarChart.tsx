@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from "recharts";
 
 interface ChartProps {
@@ -33,6 +34,10 @@ const COLORS = [
   "#3b82f6",
 ];
 
+function truncateLabel(name: string, maxLen: number) {
+  return name.length > maxLen ? name.slice(0, maxLen) + "..." : name;
+}
+
 export default function BarChartCard({
   data,
   title,
@@ -40,62 +45,85 @@ export default function BarChartCard({
   layout = "vertical",
 }: ChartProps) {
   const isVertical = layout === "vertical";
-  const maxNameLen = Math.max(...data.map((d) => d.name.length));
-  const margin = isVertical
-    ? { top: 5, right: 30, left: Math.min(maxNameLen * 8, 200), bottom: 5 }
-    : { top: 5, right: 30, left: 20, bottom: 60 };
+  const maxNameLen = Math.max(...data.map((d) => d.name.length), 10);
+  const chartHeight = isVertical
+    ? Math.max(data.length * 32 + 40, 200)
+    : 300;
+
+  const truncatedData = data.map((d) => ({
+    ...d,
+    label: truncateLabel(d.name, 25),
+  }));
 
   return (
-    <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
-      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+    <div className="card-glow rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
+      <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
         {title}
       </h3>
-      <ResponsiveContainer width="100%" height={data.length * 36 + 60}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
         <BarChart
-          data={data}
+          data={truncatedData}
           layout={isVertical ? "vertical" : "horizontal"}
-          margin={margin}
+          margin={
+            isVertical
+              ? { top: 5, right: 40, left: 10, bottom: 5 }
+              : { top: 5, right: 20, left: 20, bottom: 70 }
+          }
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={isVertical} vertical={!isVertical} />
           {isVertical ? (
             <>
-              <XAxis type="number" tick={{ fill: "#71717a", fontSize: 12 }} />
+              <XAxis type="number" tick={{ fill: "#52525b", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis
                 type="category"
-                dataKey="name"
-                tick={{ fill: "#a1a1aa", fontSize: 12 }}
-                width={Math.min(maxNameLen * 8, 180)}
+                dataKey="label"
+                tick={{ fill: "#a1a1aa", fontSize: 11 }}
+                width={Math.min(maxNameLen * 6.5, 170)}
+                axisLine={false}
+                tickLine={false}
               />
             </>
           ) : (
             <>
               <XAxis
-                dataKey="name"
-                tick={{ fill: "#a1a1aa", fontSize: 11 }}
-                angle={-35}
+                dataKey="label"
+                tick={{ fill: "#a1a1aa", fontSize: 10 }}
+                angle={-40}
                 textAnchor="end"
                 height={80}
+                interval={0}
+                axisLine={false}
+                tickLine={false}
               />
-              <YAxis tick={{ fill: "#71717a", fontSize: 12 }} />
+              <YAxis tick={{ fill: "#52525b", fontSize: 11 }} axisLine={false} tickLine={false} />
             </>
           )}
           <Tooltip
+            cursor={{ fill: "rgba(99,102,241,0.06)" }}
             contentStyle={{
               backgroundColor: "#1a1b23",
-              border: "1px solid #27272a",
-              borderRadius: "8px",
+              border: "1px solid #3f3f46",
+              borderRadius: "10px",
               color: "#e4e4e7",
-              fontSize: "13px",
+              fontSize: "12px",
+              padding: "8px 12px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
             }}
+            formatter={(value, _name, props) => [String(value), (props?.payload as { name?: string })?.name || "Count"]}
           />
-          <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-            {data.map((_, index) => (
+          <Bar dataKey="value" radius={isVertical ? [0, 6, 6, 0] : [6, 6, 0, 0]} barSize={18}>
+            {truncatedData.map((_, index) => (
               <Cell
                 key={index}
                 fill={colors[index % colors.length]}
                 fillOpacity={0.85}
               />
             ))}
+            <LabelList
+              dataKey="value"
+              position={isVertical ? "right" : "top"}
+              style={{ fill: "#a1a1aa", fontSize: 11, fontWeight: 600 }}
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

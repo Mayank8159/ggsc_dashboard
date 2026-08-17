@@ -4,7 +4,9 @@
   --background: #0f1117;
   --foreground: #e4e4e7;
   --card-bg: #1a1b23;
+  --card-bg-hover: #1f2029;
   --card-border: #27272a;
+  --card-border-hover: #3f3f46;
   --accent: #6366f1;
   --accent-light: #818cf8;
   --muted: #71717a;
@@ -40,19 +42,20 @@ body {
 
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--card-bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--card-border);
+  background: #3f3f46;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+  background: #52525b;
 }
 
 .recharts-text {
@@ -62,4 +65,43 @@ body {
 
 .recharts-cartesian-grid line {
   stroke: var(--card-border) !important;
+}
+
+/* Table overrides */
+.table-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.table-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+/* Card hover glow */
+.card-glow {
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1), 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+/* Badge pulse */
+.badge-glow {
+  animation: badge-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes badge-pulse {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+/* Sticky table header fix */
+.sticky-header thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
 }

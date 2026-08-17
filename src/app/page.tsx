@@ -27,56 +27,65 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       {/* Header */}
-      <header className="border-b border-[var(--card-border)] bg-[var(--card-bg)]/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-[var(--card-border)] bg-[var(--card-bg)]/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white font-bold text-lg">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                boxShadow: "0 0 20px rgba(99,102,241,0.3)",
+              }}
+            >
               G
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-zinc-100">
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold text-zinc-100 truncate">
                 GGSC Recruitment Dashboard
               </h1>
               <p className="text-xs text-zinc-500">Drive 2026 - Response Analytics</p>
             </div>
           </div>
-          <div className="text-xs text-zinc-600 bg-[var(--card-bg)] border border-[var(--card-border)] px-3 py-1.5 rounded-lg">
-            {analytics.total} Total Responses
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline text-xs text-zinc-600 bg-[var(--card-bg)] border border-[var(--card-border)] px-3 py-1.5 rounded-lg tabular-nums">
+              {analytics.total} responses &middot; {uniqueUniversities} universities
+            </span>
+            <span className="sm:hidden text-xs text-zinc-600 bg-[var(--card-bg)] border border-[var(--card-border)] px-2 py-1.5 rounded-lg tabular-nums">
+              {analytics.total}
+            </span>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="max-w-[1600px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6">
           <div className="flex gap-1 -mb-px">
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === "dashboard"
-                  ? "border-[var(--accent)] text-[var(--accent)]"
-                  : "border-transparent text-zinc-500 hover:text-zinc-300"
-              }`}
-            >
-              Analytics Dashboard
-            </button>
-            <button
-              onClick={() => setActiveTab("interviews")}
-              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === "interviews"
-                  ? "border-[var(--accent)] text-[var(--accent)]"
-                  : "border-transparent text-zinc-500 hover:text-zinc-300"
-              }`}
-            >
-              Interview Assignments
-            </button>
+            {(
+              [
+                ["dashboard", "Analytics Dashboard"],
+                ["interviews", "Interview Assignments"],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === key
+                    ? "border-[var(--accent)] text-[var(--accent)]"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-[1800px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {activeTab === "dashboard" && (
           <>
             {/* Stats Row */}
-            <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <StatCard label="Total Applicants" value={analytics.total} icon="👥" color="#6366f1" />
               <StatCard label="Universities" value={uniqueUniversities} icon="🏛" color="#8b5cf6" />
               <StatCard label="Fully Committed" value={committedCount} icon="✅" color="#22c55e" />
@@ -84,13 +93,13 @@ export default function Home() {
             </section>
 
             {/* Charts Row 1 */}
-            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <BarChartCard data={analytics.domainCounts} title="Domain Preferences" layout="vertical" />
               <PieChartCard data={analytics.yearCounts} title="Year of Study Distribution" />
             </section>
 
             {/* Charts Row 2 */}
-            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <BarChartCard
                 data={analytics.universityCounts}
                 title="Top Universities"
@@ -106,7 +115,7 @@ export default function Home() {
             </section>
 
             {/* Charts Row 3 */}
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <PieChartCard data={analytics.participationCounts} title="Commitment Level" colors={["#22c55e", "#f59e0b", "#ef4444"]} />
               <PieChartCard data={analytics.whatsappCounts} title="WhatsApp Group Status" colors={["#22c55e", "#ef4444", "#6366f1"]} />
               <PieChartCard data={analytics.experienceCounts} title="Prior Experience" colors={["#6366f1", "#a1a1aa"]} />
@@ -125,13 +134,11 @@ export default function Home() {
           </>
         )}
 
-        {activeTab === "interviews" && (
-          <InterviewPage assignments={assignments} />
-        )}
+        {activeTab === "interviews" && <InterviewPage assignments={assignments} />}
 
         {/* Footer */}
-        <footer className="text-center py-6 text-xs text-zinc-600 border-t border-[var(--card-border)]">
-          GGSC Recruitment Drive 2026 &middot; Dashboard powered by Next.js &amp; Recharts
+        <footer className="text-center py-6 text-xs text-zinc-700 border-t border-[var(--card-border)]">
+          GGSC Recruitment Drive 2026 &middot; Built with Next.js &amp; Recharts
         </footer>
       </main>
     </div>
