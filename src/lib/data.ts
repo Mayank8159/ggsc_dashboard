@@ -123,7 +123,8 @@ export const rawData: ResponseData = responses as ResponseData;
 export interface InterviewTeam {
   teamName: string;
   color: string;
-  interviewers: string[];
+  members: { name: string; optional: boolean }[];
+  schedule: { days: string; time: string }[];
   domainKeywords: string[];
 }
 
@@ -131,31 +132,70 @@ export const interviewTeams: InterviewTeam[] = [
   {
     teamName: "Photography / Editing / Graphics",
     color: "#d946ef",
-    interviewers: ["Suvrojeet", "Swastik", "Debojeet"],
+    members: [
+      { name: "Suvrojeet", optional: false },
+      { name: "Swastik", optional: false },
+      { name: "Debojeet", optional: false },
+    ],
+    schedule: [
+      { days: "D1 + D2", time: "11 AM – 2 PM" },
+    ],
     domainKeywords: ["photography", "photo", "editing", "graphic", "graphics", "design", "visual", "video", "cinematography", "thumbnail", "poster", "branding"],
   },
   {
     teamName: "Content",
     color: "#f59e0b",
-    interviewers: ["Pallabi", "Subham", "Riti Mukta"],
+    members: [
+      { name: "Pallabi", optional: false },
+      { name: "Subham", optional: false },
+      { name: "Ritimukta", optional: true },
+    ],
+    schedule: [
+      { days: "D1", time: "11 AM onwards" },
+    ],
     domainKeywords: ["content", "writing", "blog", "article", "copywriting", "copy", "editorial", "storytelling", "creative writing"],
   },
   {
     teamName: "Social Media / PR",
     color: "#3b82f6",
-    interviewers: ["Oyeshee", "Pallabi", "Debojeet", "Sattiwk"],
+    members: [
+      { name: "Oyeshee", optional: false },
+      { name: "Pallabi", optional: false },
+      { name: "Debojeet", optional: false },
+      { name: "Swastik", optional: false },
+      { name: "Sattwik", optional: true },
+    ],
+    schedule: [
+      { days: "D1 + D2", time: "5 PM onwards" },
+    ],
     domainKeywords: ["social media", "social", "pr", "branding", "marketing", "community", "outreach", "promotion", "public relations"],
   },
   {
     teamName: "Std Ops / Logistics / Volunteer",
     color: "#22c55e",
-    interviewers: ["Debayan", "Parnatosh", "Sagnik"],
+    members: [
+      { name: "Debayan", optional: false },
+      { name: "Parnatosh", optional: false },
+      { name: "Sagnik", optional: false },
+      { name: "Suvrojeet", optional: true },
+    ],
+    schedule: [
+      { days: "D1 + D2", time: "11 AM onwards" },
+    ],
     domainKeywords: ["logistics", "volunteer", "operations", "management", "coordination", "planning", "event", "student operations", "std op"],
   },
   {
     teamName: "Web Development",
     color: "#6366f1",
-    interviewers: ["Mayank", "Tridibesh", "Diptodeep", "Swastik"],
+    members: [
+      { name: "Mayank", optional: false },
+      { name: "Tridibesh", optional: false },
+      { name: "Diptodeep", optional: true },
+    ],
+    schedule: [
+      { days: "D1", time: "6 PM onwards" },
+      { days: "D2", time: "6 PM onwards" },
+    ],
     domainKeywords: ["web", "development", "coding", "programming", "frontend", "backend", "fullstack", "full stack", "app", "mobile", "android", "ios", "software", "web development", "web dev"],
   },
 ];
@@ -183,7 +223,8 @@ export function getInterviewAssignments(data: ResponseData): InterviewAssignment
       team: {
         teamName: "Unassigned",
         color: "#71717a",
-        interviewers: [],
+        members: [],
+        schedule: [],
         domainKeywords: [],
       },
       applicants: unassigned,
